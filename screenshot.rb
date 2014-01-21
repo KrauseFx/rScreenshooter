@@ -16,6 +16,7 @@ class Screenshooter
 		prepare_folders
 
 		@automation_script = script_path
+		raise "UIAutomation script not found at path '#{@automation_script}'" unless File.exists?(@automation_script)
 		@devices = config["devices"]
 		@languages = config["languages"]
 		@ios_version = config["ios_version"]
@@ -49,8 +50,6 @@ class Screenshooter
 
 		clean_up
 
-		system("rm 'Latest'")
-		system("ln -s '#{@results_path}' Latest")
 		system("open '#{@results_path}'")
 	end
 
@@ -61,6 +60,8 @@ class Screenshooter
 	def prepare_folders
 		FileUtils.mkdir_p "Results"
 		FileUtils.mkdir_p @results_path
+		system("rm 'Latest'")
+		system("ln -s '#{@results_path}' Latest")
 	end
 
 	def get_app_path
