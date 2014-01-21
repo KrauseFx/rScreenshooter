@@ -6,11 +6,13 @@ require 'FileUtils'
 class Screenshooter
 	include Singleton
 
-	def run(app_name, script_path, config = {})
+	def run(app_name, script_path, export_path, config = {})
 		raise "The first parameter app_name is mandatory!" unless app_name
 		raise "The second parameter script_path is mandatory!" unless script_path
 
-		@results_path = Time.now.strftime "Results/%Y-%m-%d %H:%M:%S"
+		path = config["output_path"] || "./Results"
+		@results_path = Time.now.strftime "#{export_path}/%Y-%m-%d %H:%M:%S"
+		puts "Exporting all the screenshots into '#{@results_path}'"
 
 		clean_up
 		prepare_folders
@@ -88,12 +90,13 @@ end
 
 if __FILE__ == $0
 	if !ARGV[0] or !ARGV[1]
-		raise "Usage: ruby screenshot.rb app_name script_path [json_config_path]\n
+		raise "Usage: ruby screenshot.rb app_name script_path [export_to] [json_config_path]\n
 			app_name: The exact name of the app that is shown in the Application Support folder
 			script_path: the path to the Javascript UIAutomation script
+			export_to: [optional] The path all the images will be exported to
 			json_config_path: [optional] a path to a customized json file as configuration (copy the default.json and pass the name here)\n\n"
 	end
 	
-	config = JSON.parse(File.read(ARGV[2] ? ARGV[2] : "config/default.json"))
-  Screenshooter.instance.run(ARGV[0], ARGV[1], config)
+	config = JSON.parse(File.read(ARGV[3] ? ARGV[3] : "config/default.json"))
+  	Screenshooter.instance.run(ARGV[0], ARGV[1], ARGV[2], config)
 end
