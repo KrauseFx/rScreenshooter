@@ -1,0 +1,11 @@
+{
+	"devices": [
+		"iPhone Retina (3.5-inch)",
+		"iPhone Retina (4-inch)"
+	],
+	"languages": [
+		"en",
+		"de"
+	],
+	"ios_version": "7.0.3"
+}

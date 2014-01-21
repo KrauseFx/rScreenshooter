@@ -15,15 +15,15 @@ class Screenshooter
 		clean_up
 		prepare_folders
 
-		@automation_script = config[:automation_script] || "test.js"
-		@devices = config[:devices] || JSON.parse(File.read("config/devices.json"))
-		@languages = config[:languages] || JSON.parse(File.read("config/languages.json"))
-		@ios_verison = config[:ios_verison] || "7.0.3"
+		@automation_script = script_path
+		@devices = config["devices"]
+		@languages = config["languages"]
+		@ios_version = config["ios_version"]
 		@app_name = app_name
 
 
 		@applications_folder = config[:applications_folder] || 
-										"/Users/#{ENV['USER']}/Library/Application Support/iPhone Simulator/#{@ios_verison}/Applications/"
+										"/Users/#{ENV['USER']}/Library/Application Support/iPhone Simulator/#{@ios_version}/Applications/"
 
 		@app_path = get_app_path
 
@@ -34,9 +34,9 @@ class Screenshooter
 
 			@devices.each do |device|
 				puts "Running #{device} in language #{language}"
-				system("./bin/switch_simulator \"#{device}\" 7.0")
+				system("./bin/switch_simulator \"#{device}\" #{@ios_version}")
 				sleep 2
-				system("./bin/switch_simulator \"#{device}\" 7.0") # TOOD: for some reason this is required twice
+				system("./bin/switch_simulator \"#{device}\" #{@ios_version}") # TOOD: for some reason this is required twice
 				sleep 2
 
 				execute
@@ -44,6 +44,8 @@ class Screenshooter
 				system("mv Results/Run*/*.png '#{@results_path}'")
 			end
 		end
+
+
 
 		clean_up
 
@@ -83,10 +85,14 @@ class Screenshooter
 
 end
 
-
-
 if __FILE__ == $0
-	raise "Pass the exact name of the app as the first parameter" unless ARGV[0]
-	raise "Pass the path of the UIAutomation script as the second parameter" unless ARGV[1]
-  Screenshooter.instance.run(ARGV[0], ARGV[1])
+	if !ARGV[0] or !ARGV[1]
+		raise "Usage: ruby screenshot.rb app_name script_path [json_config_path]\n
+			app_name: The exact name of the app that is shown in the Application Support folder
+			script_path: the path to the Javascript UIAutomation script
+			json_config_path: [optional] a path to a customized json file as configuration (copy the default.json and pass the name here)\n\n"
+	end
+	
+	config = JSON.parse(File.read(ARGV[2] ? ARGV[2] : "config/default.json"))
+  Screenshooter.instance.run(ARGV[0], ARGV[1], config)
 end
