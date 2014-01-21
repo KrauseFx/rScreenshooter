@@ -6,7 +6,11 @@ require 'FileUtils'
 class Screenshooter
 	include Singleton
 
-	def run(config = {})
+	def run(app_name, config = {})
+		raise "The parameter app_name is mandatory!" unless app_name
+
+		@results_path = Time.now.strftime "Results/%Y-%m-%d %H:%M:%S"
+
 		clean_up
 		prepare_folders
 
@@ -14,7 +18,7 @@ class Screenshooter
 		@devices = config[:devices] || JSON.parse(File.read("config/devices.json"))
 		@languages = config[:languages] || JSON.parse(File.read("config/languages.json"))
 		@ios_verison = config[:ios_verison] || "7.0.3"
-		@app_name = config[:app_name] || "9"
+		@app_name = app_name
 
 
 		@applications_folder = config[:applications_folder] || 
@@ -22,17 +26,21 @@ class Screenshooter
 
 		@app_path = get_app_path
 
+
+
 		@languages.each do |language|
 			system("./bin/switch_language #{language}")
 
 			@devices.each do |device|
-				puts "Running #{device} in langauge #{language}"
+				puts "Running #{device} in language #{language}"
 				system("./bin/switch_simulator \"#{device}\" 7.0")
 				sleep 2
 				system("./bin/switch_simulator \"#{device}\" 7.0") # TOOD: for some reason this is required twice
 				sleep 2
 
 				execute
+
+				system("mv Results/Run*/*.png '#{@results_path}'")
 			end
 		end
 
@@ -45,6 +53,7 @@ class Screenshooter
 
 	def prepare_folders
 		FileUtils.mkdir_p "Results"
+		FileUtils.mkdir_p @results_path
 	end
 
 	def get_app_path
@@ -56,6 +65,7 @@ class Screenshooter
 				end
 			end
 		end
+		raise "Sorry, I couldn't find an app with the name '#{@app_name}'"
 	end
 
 	def execute
@@ -71,5 +81,6 @@ end
 
 
 if __FILE__ == $0
-  Screenshooter.instance.run()
+	raise "Pass the exact name of the app as the first parameter" unless ARGV[0]
+  Screenshooter.instance.run(ARGV[0])
 end
