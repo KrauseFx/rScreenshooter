@@ -6,8 +6,9 @@ require 'FileUtils'
 class Screenshooter
 	include Singleton
 
-	def run(app_name, config = {})
-		raise "The parameter app_name is mandatory!" unless app_name
+	def run(app_name, script_path, config = {})
+		raise "The first parameter app_name is mandatory!" unless app_name
+		raise "The second parameter script_path is mandatory!" unless script_path
 
 		@results_path = Time.now.strftime "Results/%Y-%m-%d %H:%M:%S"
 
@@ -22,7 +23,7 @@ class Screenshooter
 
 
 		@applications_folder = config[:applications_folder] || 
-										"/Users/#{ENV['USER'] }/Library/Application Support/iPhone Simulator/#{@ios_verison}/Applications/"
+										"/Users/#{ENV['USER']}/Library/Application Support/iPhone Simulator/#{@ios_verison}/Applications/"
 
 		@app_path = get_app_path
 
@@ -45,6 +46,10 @@ class Screenshooter
 		end
 
 		clean_up
+
+		system("rm 'Latest'")
+		system("ln -s '#{@results_path}' Latest")
+		system("open '#{@results_path}'")
 	end
 
 	def clean_up
@@ -82,5 +87,6 @@ end
 
 if __FILE__ == $0
 	raise "Pass the exact name of the app as the first parameter" unless ARGV[0]
-  Screenshooter.instance.run(ARGV[0])
+	raise "Pass the path of the UIAutomation script as the second parameter" unless ARGV[1]
+  Screenshooter.instance.run(ARGV[0], ARGV[1])
 end
