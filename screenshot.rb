@@ -75,7 +75,7 @@ class Screenshooter
 				end
 			end
 		end
-		raise "Sorry, I couldn't find an app with the name '#{@app_name}'"
+		raise "Sorry, I couldn't find an app with the name '#{@app_name}'. Make sure the app is installed on the simulator."
 	end
 
 	def execute
