@@ -37,12 +37,7 @@ class Screenshooter
 
 			@devices.each do |device|
 				puts "Running #{device} in language #{language}"
-				system("./bin/switch_simulator \"#{device}\" #{@ios_version}")
-				sleep 2
-				system("./bin/switch_simulator \"#{device}\" #{@ios_version}") # TOOD: for some reason this is required twice
-				sleep 2
-
-				execute
+				execute("#{device}")
 
 				system("mv Results/Run*/*.png '#{@results_path}'")
 			end
@@ -75,12 +70,12 @@ class Screenshooter
 				end
 			end
 		end
-		raise "Sorry, I couldn't find an app with the name '#{@app_name}'. Make sure the app is installed on the simulator."
+		raise "Sorry, I couldn't find an app with the name '#{@app_name}'"
 	end
 
-	def execute
+	def execute(device)
 		# xcode-select -p
-		command = "instruments -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate"
+		command = "instruments -w \"#{device}\" -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate"
 		command += " \"#{@app_path}\" -e UIASCRIPT \"#{@automation_script}\" -e UIARESULTSPATH Results/"
 		puts command
 		system(command)
