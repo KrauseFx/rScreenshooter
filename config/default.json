@@ -1,11 +1,11 @@
 {
 	"devices": [
-		"iPhone Retina (3.5-inch)",
-		"iPhone Retina (4-inch)"
+		"iPhone Retina (3.5-inch) - Simulator - iOS 7.1",
+		"iPhone Retina (4-inch) - Simulator - iOS 7.1",
 	],
 	"languages": [
 		"en",
 		"de"
 	],
-	"ios_version": "7.0.3"
+	"ios_version": "7.1"
 }
