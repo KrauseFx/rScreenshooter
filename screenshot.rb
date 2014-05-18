@@ -25,10 +25,10 @@ class Screenshooter
 		@app_name = app_name
 
 
-		@applications_folder = config[:applications_folder] || 
+		applications_folder = config[:applications_folder] || 
 										"/Users/#{ENV['USER']}/Library/Application Support/iPhone Simulator/#{@ios_version}/Applications/"
 
-		@app_path = get_app_path
+		@app_path = get_app_path(applications_folder)
 
 
 
@@ -61,10 +61,10 @@ class Screenshooter
 		system("ln -s '#{@results_path}' Latest")
 	end
 
-	def get_app_path
-		Dir.glob("#{@applications_folder}*").each do |f| 
+	def get_app_path(applications_folder, app_name = @app_name)
+		Dir.glob("#{applications_folder}*").sort_by{ |f| File.mtime(f) }.reverse.each do |f| 
 			Dir.glob("#{f}/*").each do |app|
-				if app.include?"#{@app_name}.app"
+				if app.include?"#{app_name}.app"
 					puts "Found the app '#{app}'"
 					return app
 				end
