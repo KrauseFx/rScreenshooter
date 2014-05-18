@@ -6,7 +6,7 @@ require 'FileUtils'
 class Screenshooter
 	include Singleton
 
-	def run(app_name, script_path, export_path, config = {})
+	def run(app_name, script_path, export_path, config = {}, generate_frames = true)
 		raise "The first parameter app_name is mandatory!" unless app_name
 		raise "The second parameter script_path is mandatory!" unless script_path
 
@@ -40,6 +40,12 @@ class Screenshooter
 				execute("#{device}")
 
 				system("mv Results/Run*/*.png '#{@results_path}'")
+
+				if generate_frames
+					Dir.glob("#{@results_path}/*.png").each do |screen|
+						system("ruby ./frame/add_frame.rb '#{screen}' '#{@results_path}/framed__#{screen.split('/').last}'")
+					end
+				end
 			end
 		end
 
