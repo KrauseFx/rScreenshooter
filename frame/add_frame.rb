@@ -13,11 +13,17 @@ raise "no file given" unless (file || '').length > 0
 original = Magick::ImageList.new  
 original.from_blob(File.read(file))
 
-image = Magick::ImageList.new  
-image.from_blob(File.read(frame_path))
+if original.rows == 1136 and original.columns == 640
 
-# Merge them!
-image.composite!(original, margin_left, margin_right, Magick::OverCompositeOp)
+  image = Magick::ImageList.new  
+  image.from_blob(File.read(frame_path))
 
-# Export them
-File.write(output_path, image.to_blob)
+  # Merge them!
+  image.composite!(original, margin_left, margin_right, Magick::OverCompositeOp)
+
+  # Export them
+  File.write(output_path, image.to_blob)
+  puts "Finished output to #{output_path}"
+else
+  puts "This screenshot has the wrong size! This script did nothing. The image needs to be 1136x640px"
+end
