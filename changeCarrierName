@@ -1,3 +1,5 @@
+# Use the nice script from Florian to change the carrier text on the iOS Simulator: https://github.com/flogehring/CarrierChanger
+
 # Use my stackoverflow answer to change the carrier name
 # http://stackoverflow.com/questions/12580694/how-to-customize-carrier-name-in-ios-6-simulator/14292811#14292811
 
