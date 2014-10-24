@@ -87,7 +87,7 @@ class Screenshooter
 
 	def execute(device)
 		# xcode-select -p
-		command = "instruments -w \"#{device}\" -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.xrplugin/Contents/Resources/Automation.tracetemplate"
+		command = "instruments -w \"#{device}\" -t \"Automation\""
 		command += " \"#{@app_path}\" -e UIASCRIPT \"#{@automation_script}\" -e UIARESULTSPATH Results/"
 		puts command
 		system(command)
