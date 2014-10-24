@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'singleton'
 require 'JSON'
 require 'FileUtils'
@@ -24,18 +25,23 @@ class Screenshooter
 		@ios_version = config["ios_version"]
 		@app_name = app_name
 
-
-		applications_folder = config[:applications_folder] || 
-										"/Users/#{ENV['USER']}/Library/Application Support/iPhone Simulator/#{@ios_version}/Applications/"
-
-		@app_path = get_app_path(applications_folder)
-
-
+		instruments_devices = `instruments -w help`
 
 		@languages.each do |language|
 			system("./bin/switch_language #{language}")
 
 			@devices.each do |device|
+
+				regexp = /#{Regexp.quote(device)} \[(.*)\]/
+				if result = instruments_devices.match(regexp)
+					device_id = result.captures
+				end
+				
+				@default_applications_folder = "/Users/#{ENV['USER']}/Library/Developer/CoreSimulator/Devices/#{device_id}/data/Containers/Bundle/Application/"
+				applications_folder = config[:applications_folder] || @default_applications_folder
+
+				@app_path = get_app_path(applications_folder)
+
 				puts "Running #{device} in language #{language}"
 				execute("#{device}")
 
@@ -68,7 +74,7 @@ class Screenshooter
 	end
 
 	def get_app_path(applications_folder, app_name = @app_name)
-		Dir.glob("#{applications_folder}*").sort_by{ |f| File.mtime(f) }.reverse.each do |f| 
+		Dir.glob("#{applications_folder}/*").sort_by{ |f| File.mtime(f) }.reverse.each do |f| 
 			Dir.glob("#{f}/*").each do |app|
 				if app.include?"#{app_name}.app"
 					puts "Found the app '#{app}'"
@@ -81,7 +87,7 @@ class Screenshooter
 
 	def execute(device)
 		# xcode-select -p
-		command = "instruments -w \"#{device}\" -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate"
+		command = "instruments -w \"#{device}\" -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.xrplugin/Contents/Resources/Automation.tracetemplate"
 		command += " \"#{@app_path}\" -e UIASCRIPT \"#{@automation_script}\" -e UIARESULTSPATH Results/"
 		puts command
 		system(command)
