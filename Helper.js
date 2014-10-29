@@ -5,8 +5,15 @@ function captureLocalizedScreenshot(name) {
 
   if (model.match(/iPhone/)) 
   {
-    if (rect.size.height > 480) model = "iOS-4-in";
-    else model = "iOS-3.5-in";
+    if (rect.size.height > 667) {
+    	model = "iPhone6Plus";
+    } else if (rect.size.height == 667) {
+    	model = "iPhone6";
+    } else if (rect.size.height == 568){
+    	model = "iPhone5";
+    } else {
+    model = "iPhone4";
+    }
   } 
   else 
   {
