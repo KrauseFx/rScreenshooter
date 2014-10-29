@@ -34,7 +34,7 @@ class Screenshooter
 
 				regexp = /#{Regexp.quote(device)} \[(.*)\]/
 				if result = instruments_devices.match(regexp)
-					device_id = result.captures
+					device_id = result.captures.first
 				end
 				
 				@default_applications_folder = "/Users/#{ENV['USER']}/Library/Developer/CoreSimulator/Devices/#{device_id}/data/Containers/Bundle/Application/"
