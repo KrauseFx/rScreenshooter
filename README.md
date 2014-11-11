@@ -1,4 +1,4 @@
-rScreenshooter
+Discontinued, use [Snapshot](https://github.com/KrauseFx/snapshot) instead.
 ==============
 
 Helps you create screenshots in multiple languages on different device types using UIAutomation.
